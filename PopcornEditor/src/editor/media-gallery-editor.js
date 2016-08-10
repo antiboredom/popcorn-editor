@@ -176,6 +176,55 @@ define( [ "util/lang", "util/uri", "util/xhr", "util/keys", "util/mediatypes", "
     resetInput();
   }
 
+  function addMediaFromSearch(q, limit) {
+    if (!limit) limit = 20;
+
+    $.ajax({
+      url: 'http://198.199.73.131/',
+      dataType: 'jsonp',
+      jsonp: "callback",
+      data: {q: q},
+      // error: function (err) { console.log(err) },
+    }).done(function(data) {
+      var results = [];
+      var id = 0;
+      data.forEach(function(res) {
+        res.results.forEach(function(w) {
+          w.file = 'http://' + Math.random().toString(36).substring(7) + '.searchvid.xyz/' + res.file.replace('.transcription.json', '');
+          w.id = id;
+          id ++;
+          results.push(w);
+        });
+      });
+
+      var total = limit === 0 ? results.length : limit;
+      var start = 0;
+
+      for (var i = 0; i < total; i ++) {
+        var result = results[i];
+        var dur = result.end - result.start;
+        var end = start + dur;
+        var popopts = {
+          "start": start,
+          "end": end,
+          "from": result.start,
+          "duration": result.end,
+          "source":[result.file]
+        }
+        Butter.app.currentMedia.tracks[0].addTrackEvent({
+          "type":"sequencer",
+          "popcornOptions": popopts
+        });
+        start += dur;
+      }
+    }).fail(function( xhr, status, errorThrown ) {
+      console.log( "Error: " + errorThrown );
+      console.log( "Status: " + status );
+      console.dir( xhr );
+    });
+  }
+
+
   function addMedia( data, options ) {
     var el = options.element || _GALLERYITEM.cloneNode( true ),
         container = options.container,
@@ -397,9 +446,14 @@ define( [ "util/lang", "util/uri", "util/xhr", "util/keys", "util/mediatypes", "
       _loadingSpinner.classList.remove( "hidden" );
     }, 300 );
     _addBtn.classList.add( "hidden" );
-    _searchInput.value = formatSource( _searchInput.value );
-    addMediaToGallery( _searchInput.value, onDenied );
+    if (_searchInput.value.trim().startsWith('http')) {
+      _searchInput.value = formatSource( _searchInput.value );
+      addMediaToGallery( _searchInput.value, onDenied );
+    } else {
+      addMediaFromSearch(_searchInput.value.trim(), 20);
+    }
   }
+
 
   function addPhotoCallback( popcornOptions, data ) {
     var source = data.source,
