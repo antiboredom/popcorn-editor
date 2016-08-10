@@ -180,7 +180,7 @@ define( [ "util/lang", "util/uri", "util/xhr", "util/keys", "util/mediatypes", "
     if (!limit) limit = 20;
 
     $.ajax({
-      url: 'http://198.199.73.131/',
+      url: 'http://searchvid.xyz/search',
       dataType: 'jsonp',
       jsonp: "callback",
       data: {q: q},
@@ -190,7 +190,7 @@ define( [ "util/lang", "util/uri", "util/xhr", "util/keys", "util/mediatypes", "
       var id = 0;
       data.forEach(function(res) {
         res.results.forEach(function(w) {
-          w.file = 'http://' + Math.random().toString(36).substring(7) + '.searchvid.xyz/' + res.file.replace('.transcription.json', '');
+          w.file = 'http://' + Math.random().toString(36).substring(7) + '.searchvid.xyz/stream/' + res.file.replace('.transcription.json', '');
           w.id = id;
           id ++;
           results.push(w);
