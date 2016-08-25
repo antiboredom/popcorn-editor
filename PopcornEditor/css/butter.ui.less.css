@@ -24836,6 +24836,19 @@ html[dir="rtl"] .placeholder {
 .butter-editor-area .project-editor .tags-label {
   display: inline;
 }
+.butter-editor-area .project-editor .share-container {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.butter-editor-area .project-editor .share-container .share-output {
+  height: 40px;
+}
+.butter-editor-area .project-editor .butter-save-btn {
+  display: none;
+}
+.butter-editor-area .project-editor .color-container {
+  display: none;
+}
 .butter-editor-area .project-editor .tags-wrapper {
   display: inline;
 }

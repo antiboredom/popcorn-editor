@@ -33,7 +33,7 @@ define( [ "core/eventmanager", "core/media", "util/sanitizer", "events/event" ],
         _backupInterval = -1,
 
         _thumbnail = location.protocol + "//" + location.host + "/resources/icons/fb-logo.png",
-        _background = "#FFFFFF";
+        _background = "#000000";
 
     function invalidate() {
       // Project is dirty, needs save, backup

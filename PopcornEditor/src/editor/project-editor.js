@@ -5,7 +5,7 @@
 define([ "editor/editor", "editor/base-editor",
           "l10n!../../{{lang}}/layouts/project-editor.html",
           "util/social-media", "ui/widget/textbox",
-          "ui/widget/tooltip", "analytics" ],
+          "ui/widget/tooltip", "analytics", "jquery" ],
   function( Editor, BaseEditor, LAYOUT_SRC, SocialMedia, TextboxWrapper, ToolTip, analytics ) {
 
   Editor.register( "project-editor", LAYOUT_SRC, function( rootElement, butter ) {
@@ -17,7 +17,10 @@ define([ "editor/editor", "editor/base-editor",
         _viewSourceBtn = _rootElement.querySelector( ".butter-view-source-btn" ),
         _settingsTabBtn = _rootElement.querySelector( ".settings-tab-btn" ),
         _saveButton = _rootElement.querySelector( ".butter-save-btn" ),
+        _shareButton = _rootElement.querySelector( ".butter-share-btn" ),
         _settingsContainer = _rootElement.querySelector( ".settings-container" ),
+        _shareContainer = _rootElement.querySelector( ".share-container" ),
+        _shareOutput = _rootElement.querySelector( ".share-output" ),
         _projectTabs = _rootElement.querySelectorAll( ".project-tab" ),
         _this = this,
         _numProjectTabs = _projectTabs.length,
@@ -105,6 +108,31 @@ define([ "editor/editor", "editor/base-editor",
       }
     }
 
+    function exportProject() {
+      _shareButton.textContent = 'Preparing'
+      var data = Butter.app.currentMedia.json;
+      data.backgroundColor = butter.project.background;
+
+      $.ajax({
+        type: "POST",
+        url: "http://videogrep.com:5000/create_video",
+        data: JSON.stringify(data),
+        success: function(data) {
+          _shareButton.textContent = 'Share'
+          _shareOutput.value = data.url;
+          _shareContainer.style.display = 'block';
+        },
+        contentType: "application/json",
+        dataType: "json"
+      });
+    }
+
+
+    function selectShareText(e) {
+      e.preventDefault();
+      _shareOutput.select();
+    }
+
     function toggleSaveButton( on ) {
       if ( butter.project.isSaved ) {
         _saveButton.textContent = "Saved";
@@ -169,7 +197,11 @@ define([ "editor/editor", "editor/base-editor",
     butter.listen( "authenticated", onLogin );
     butter.listen( "projectchanged", onProjectChanged );
     _saveButton.addEventListener( "click", saveProject );
+    _shareButton.addEventListener( "click", exportProject );
     butter.listen( "logout", onLogout );
+
+    _shareContainer.style.display = 'none';
+    _shareContainer.addEventListener('click', selectShareText);;
 
     _project = butter.project;
 
